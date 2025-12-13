@@ -3,7 +3,6 @@ package cn.czyx007.infinite_provider.registry;
 import cn.czyx007.infinite_provider.Tags;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -22,11 +21,5 @@ public class ModCreativeTabs extends CreativeTabs {
     @SideOnly(Side.CLIENT)
     public ItemStack createIcon() {
         return new ItemStack(ModProviders.PROVIDERS[0]);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void displayAllRelevantItems(NonNullList<ItemStack> items) {
-        super.displayAllRelevantItems(items);
     }
 }

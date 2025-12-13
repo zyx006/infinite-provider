@@ -178,6 +178,8 @@ dependencies {
     }
 
     implementation(rfg.deobf("curse.maven:ae2-extended-life-570458:6302098"))
+    compileOnly(rfg.deobf("curse.maven:MekanismEnergistics-1027681:5775101"))
+    implementation(rfg.deobf("curse.maven:mekanism-ce-unofficial-840735:5946841"))
 }
 
 apply from: 'gradle/scripts/dependencies.gradle'
