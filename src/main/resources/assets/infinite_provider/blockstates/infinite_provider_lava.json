@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "normal": { "model": "infinite_provider:infinite_provider_lava" },
+    "inventory": { "model": "infinite_provider:infinite_provider_lava" }
+  }
+}

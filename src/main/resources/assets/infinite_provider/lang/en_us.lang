@@ -1,0 +1,19 @@
+# Infinite Provider Mod - English Language File
+
+# Block Names
+tile.infinite_provider.infinite_provider_cobblestone.name=Infinite Cobblestone Provider
+tile.infinite_provider.infinite_provider_water.name=Infinite Water Provider
+tile.infinite_provider.infinite_provider_lava.name=Infinite Lava Provider
+
+# Item Names (same as blocks)
+item.infinite_provider.infinite_provider_cobblestone.name=Infinite Cobblestone Provider
+item.infinite_provider.infinite_provider_water.name=Infinite Water Provider
+item.infinite_provider.infinite_provider_lava.name=Infinite Lava Provider
+
+# Creative Tab
+itemGroup.infinite_provider=Infinite Provider
+
+# Tooltip Information
+infinite_provider.tooltip.cobblestone=Provides infinite cobblestone
+infinite_provider.tooltip.water=Provides infinite water source, extinguishes fire when stood on
+infinite_provider.tooltip.lava=Provides infinite lava source, causes fire damage when stood on

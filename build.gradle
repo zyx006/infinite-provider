@@ -103,10 +103,42 @@ minecraft {
 }
 
 repositories {
-    maven {
-        name 'CleanroomMC Maven'
-        url 'https://maven.cleanroommc.com'
+    flatDir {
+        dirs("libs")
     }
+    maven {
+        url = uri("https://maven.aliyun.com/nexus/content/groups/public/")
+    }
+    maven {
+        url = uri("https://maven.aliyun.com/nexus/content/repositories/jcenter")
+    }
+    maven {
+        url = uri("https://maven.cleanroommc.com")
+    }
+    maven {
+        url = uri("https://cfa2.cursemaven.com")
+    }
+    maven {
+        url = uri("https://cursemaven.com")
+    }
+    maven {
+        url = uri("https://maven.blamejared.com/")
+    }
+    maven {
+        url = uri("https://repo.spongepowered.org/maven")
+    }
+    maven {
+        name = "GeckoLib"
+        url = uri("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
+    }
+    maven {
+        name = "OvermindDL1 Maven"
+        url = uri("https://gregtech.overminddl1.com/")
+        mavenContent {
+            excludeGroup("net.minecraftforge") // missing the `universal` artefact
+        }
+    }
+    mavenCentral()
 }
 
 dependencies {
@@ -144,6 +176,8 @@ dependencies {
         testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
+
+    implementation(rfg.deobf("curse.maven:ae2-extended-life-570458:6302098"))
 }
 
 apply from: 'gradle/scripts/dependencies.gradle'
