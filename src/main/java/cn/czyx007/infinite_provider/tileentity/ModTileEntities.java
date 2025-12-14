@@ -1,7 +1,6 @@
 package cn.czyx007.infinite_provider.tileentity;
 
 import cn.czyx007.infinite_provider.Tags;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**

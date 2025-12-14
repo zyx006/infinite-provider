@@ -127,7 +127,7 @@ public class OutputScheduler {
         // 直接使用最大容量（2.1G）进行输出，不进行容量计算
         int itemOutputRate = MAX_CAPACITY;
         int fluidOutputRate = MAX_CAPACITY;
-        
+
         // 检查供应器类型
         boolean hasItem = provider.getProvidedItem() != null && !provider.getProvidedItem().isEmpty();
         boolean hasFluid = provider.getProvidedFluid() != null;
@@ -166,6 +166,7 @@ public class OutputScheduler {
         
         switch (currentState) {
             case DEFAULT:
+            case SLEEPING:
                 if (outputSuccess) {
                     provider.setOutputState(IOutputProvider.OutputState.ACTIVE);
                 }
@@ -176,20 +177,7 @@ public class OutputScheduler {
                     provider.setOutputState(IOutputProvider.OutputState.SLEEPING);
                 }
                 break;
-            case SLEEPING:
-                if (outputSuccess) {
-                    provider.setOutputState(IOutputProvider.OutputState.ACTIVE);
-                }
-                break;
         }
-    }
-    
-    /**
-     * 获取最大输出速率
-     * @return 最大输出速率 (2.1G)
-     */
-    public int getMaxOutputRate() {
-        return MAX_CAPACITY;
     }
     
     /**

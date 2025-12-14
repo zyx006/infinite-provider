@@ -1,7 +1,7 @@
 package cn.czyx007.infinite_provider;
 
-import cn.czyx007.infinite_provider.registry.ModProviders;
 import cn.czyx007.infinite_provider.tileentity.ModTileEntities;
+import cn.czyx007.infinite_provider.config.GeneratorConfig;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -16,6 +16,8 @@ public class InfiniteProvider {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         LOGGER.info("Hello From {}!", Tags.MOD_NAME);
+        // 注册配置
+        GeneratorConfig.syncConfig();
         // 注册TileEntity
         ModTileEntities.registerTileEntities();
     }
