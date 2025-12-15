@@ -180,7 +180,7 @@ public class TileEntityInfiniteProviderWater extends TileEntityInfiniteProviderB
     }
 
     /**
-     * **新增方法：向上传递能量到顶部水供应器**
+     * 向上传递能量到顶部水供应器
      */
     protected void transferEnergyUpward() {
         if (world == null || isTopProvider) {

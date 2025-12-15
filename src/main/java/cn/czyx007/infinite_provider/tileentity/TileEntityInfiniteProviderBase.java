@@ -201,7 +201,7 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
         
         // 首先尝试处理流体取出（需要容器）
         if (getProvidedFluid() != null && !heldItem.isEmpty() && isFluidContainer(heldItem)) {
-            extractFluid(player);
+            extractFluid(player, isShiftClick);
             return;
         }
 
@@ -209,6 +209,73 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
         ItemStack providedItem = getProvidedItem();
         if (providedItem != null && !providedItem.isEmpty()) {
             extractItem(player, providedItem, isShiftClick);
+        }
+    }
+    
+    /**
+     * 处理玩家右键交互
+     */
+    public void onRightClick(EntityPlayer player, boolean isShiftClick) {
+        ItemStack heldItem = player.getHeldItemMainhand();
+        
+        if (heldItem.isEmpty()) {
+            return;
+        }
+        
+        // 检查是否是同种物品
+        ItemStack providedItem = getProvidedItem();
+        if (providedItem != null && !providedItem.isEmpty()) {
+            if (ItemStack.areItemsEqual(heldItem, providedItem) && 
+                ItemStack.areItemStackTagsEqual(heldItem, providedItem)) {
+                // 接受同种物品输入（直接消耗掉）
+                heldItem.shrink(heldItem.getCount());
+                player.inventoryContainer.detectAndSendChanges();
+                return;
+            }
+        }
+        
+        // 检查是否是装有同种流体的容器
+        Fluid providedFluid = getProvidedFluid();
+        if (providedFluid != null && isFluidContainer(heldItem)) {
+            // 创建单个容器的副本进行处理
+            ItemStack singleContainer = heldItem.copy();
+            singleContainer.setCount(1);
+            
+            IFluidHandlerItem fluidHandler = singleContainer.getCapability(
+                CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+            if (fluidHandler != null) {
+                IFluidTankProperties[] props = fluidHandler.getTankProperties();
+                if (props != null && props.length > 0) {
+                    FluidStack contents = props[0].getContents();
+                    if (contents != null && contents.getFluid() == providedFluid) {
+                        // 接受同种流体输入（清空容器）
+                        FluidStack drained = fluidHandler.drain(Integer.MAX_VALUE, true);
+                        if (drained != null && drained.amount > 0) {
+                            // 从副本的FluidHandler获取清空后的容器
+                            ItemStack emptyContainer = fluidHandler.getContainer();
+                            
+                            // 消耗原手持物品中的一个
+                            heldItem.shrink(1);
+                            
+                            // 处理空容器的放置
+                            int currentSlot = player.inventory.currentItem;
+                            if (heldItem.getCount() <= 0) {
+                                // 手持槽空了，直接放空容器
+                                player.inventory.setInventorySlotContents(currentSlot, emptyContainer);
+                            } else {
+                                // 手持槽还有容器，尝试添加到背包
+                                if (!player.inventory.addItemStackToInventory(emptyContainer)) {
+                                    // 背包满了，丢出空容器
+                                    if (!player.world.isRemote) {
+                                        player.dropItem(emptyContainer, false);
+                                    }
+                                }
+                            }
+                            player.inventoryContainer.detectAndSendChanges();
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -263,83 +330,115 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
     /**
      * 取出流体
      */
-    private void extractFluid(EntityPlayer player) {
+    private void extractFluid(EntityPlayer player, boolean isShiftClick) {
         ItemStack heldItem = player.getHeldItemMainhand();
         if (heldItem.isEmpty()) {
             return;
         }
 
-        // 获取流体容器能力
-        IFluidHandlerItem fluidHandler = heldItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
-        if (fluidHandler == null) {
-            return;
-        }
+        int containerCount = heldItem.getCount();
+        int currentSlot = player.inventory.currentItem;
 
-        // 获取容器属性
-        IFluidTankProperties[] tankProperties = fluidHandler.getTankProperties();
-        if (tankProperties == null || tankProperties.length == 0) {
-            return;
-        }
+        // Shift左键且容器数量>1时，先检查是否可以原地替换
+        if (isShiftClick && containerCount > 1) {
+            // 测试第一个容器
+            ItemStack testContainer = heldItem.copy();
+            testContainer.setCount(1);
 
-        // 计算容器还能接受多少流体
-        int totalCapacity = 0;
-        int currentAmount = 0;
-        
-        for (IFluidTankProperties prop : tankProperties) {
-            if (prop != null) {
-                totalCapacity += prop.getCapacity();
-                FluidStack contents = prop.getContents();
-                if (contents != null) {
-                    currentAmount += contents.amount;
+            IFluidHandlerItem testHandler = testContainer.getCapability(
+                CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+            if (testHandler != null) {
+                IFluidTankProperties[] testProps = testHandler.getTankProperties();
+                if (testProps != null && testProps.length > 0) {
+                    int[] spaceInfo = calculateFluidContainerSpace(testProps);
+                    int testSpace = spaceInfo[2]; // 可用空间
+
+                    if (testSpace > 0) {
+                        int testFilled = testHandler.fill(new FluidStack(getProvidedFluid(), testSpace), true);
+                        if (testFilled > 0) {
+                            ItemStack testFilledContainer = testHandler.getContainer();
+
+                            // 如果填充后的容器可堆叠，直接原地替换所有容器
+                            if (testFilledContainer.isStackable()) {
+                                // 填充所有容器
+                                ItemStack accumulatedFilled = ItemStack.EMPTY;
+                                int successCount = 0;
+
+                                for (int i = 0; i < containerCount; i++) {
+                                    ItemStack singleContainer = heldItem.copy();
+                                    singleContainer.setCount(1);
+
+                                    ItemStack filledResult = fillSingleContainer(singleContainer);
+                                    if (filledResult == null) break;
+
+                                    if (accumulatedFilled.isEmpty()) {
+                                        accumulatedFilled = filledResult.copy();
+                                    } else {
+                                        accumulatedFilled.grow(1);
+                                    }
+                                    successCount++;
+                                }
+
+                                // 直接替换手持槽
+                                if (successCount > 0) {
+                                    player.inventory.setInventorySlotContents(currentSlot, accumulatedFilled);
+                                    player.inventoryContainer.detectAndSendChanges();
+                                }
+                                return; // 完成处理
+                            }
+                        }
+                    }
                 }
             }
         }
-        
-        int availableSpace = totalCapacity - currentAmount;
-        
-        // 如果容器已满，无法继续填充
-        if (availableSpace <= 0) {
-            return;
-        }
-        
-        // 先模拟填充，检查是否可以填充
-        int simulatedFilled = fluidHandler.fill(new FluidStack(getProvidedFluid(), availableSpace), false);
-        if (simulatedFilled <= 0) {
-            return;
-        }
 
-        // 创建一个新的流体处理器实例，避免直接修改原物品
-        ItemStack containerCopy = heldItem.copy();
-        IFluidHandlerItem copyHandler = containerCopy.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
-        
-        if (copyHandler == null) {
-            return;
-        }
+        // 正常处理模式（不可堆叠容器或单击或背包有空间时逐个处理）
+        int filledCount = 0;
+        int maxFillCount = isShiftClick ? containerCount : 1;
 
-        // 确认可以填充，执行实际填充
-        int actualFilled = copyHandler.fill(new FluidStack(getProvidedFluid(), simulatedFilled), true);
-        if (actualFilled <= 0) {
-            return;
-        }
+        for (int i = 0; i < maxFillCount; i++) {
+            // 为每个容器创建单独的副本
+            ItemStack singleContainer = heldItem.copy();
+            singleContainer.setCount(1);
+            
+            // 填充容器
+            ItemStack filledContainer = fillSingleContainer(singleContainer);
+            if (filledContainer == null) {
+                continue;
+            }
 
-        // 获取填充后的容器
-        ItemStack filledContainer = copyHandler.getContainer();
-        
-        // 只有在成功填充后才消耗玩家手中的容器
-        heldItem.shrink(1);
-        if (heldItem.getCount() <= 0) {
-            player.inventory.mainInventory.set(player.inventory.currentItem, ItemStack.EMPTY);
-        }
-        
-        // 给玩家填充后的容器
-        if (!player.inventory.addItemStackToInventory(filledContainer)) {
-            // 如果背包满了，丢出物品
-            if (!player.world.isRemote) {
-                player.dropItem(filledContainer, false);
+            // 记录当前状态
+            boolean willEmptySlot = heldItem.getCount() == 1;
+
+            // 先消耗原容器（这样会腾出空间）
+            heldItem.shrink(1);
+
+            // 如果消耗后手持槽变空了，优先把填充后的容器放回手持槽
+            if (willEmptySlot) {
+                player.inventory.setInventorySlotContents(currentSlot, filledContainer);
+                filledCount++;
+                // 不需要继续处理，因为已经填充了唯一的容器
+                break;
+            } else {
+                // 否则尝试添加到背包其他位置
+                if (!player.inventory.addItemStackToInventory(filledContainer)) {
+                    // 如果添加失败，丢出物品
+                    if (!player.world.isRemote) {
+                        player.dropItem(filledContainer, false);
+                    }
+                }
+                filledCount++;
             }
         }
         
-        player.inventoryContainer.detectAndSendChanges();
+        // 如果手中的物品用完了且没有成功填充，清空手持槽
+        if (heldItem.getCount() <= 0 && filledCount == 0) {
+            player.inventory.setInventorySlotContents(currentSlot, ItemStack.EMPTY);
+        }
+        
+        if (filledCount > 0) {
+            player.inventoryContainer.detectAndSendChanges();
+        }
     }
 
     /**
@@ -364,6 +463,63 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
         // 检查是否有有效的储罐属性
         IFluidTankProperties[] tankProperties = fluidHandler.getTankProperties();
         return tankProperties != null && tankProperties.length > 0;
+    }
+
+    /**
+     * 计算流体容器的可用空间
+     * @param tankProperties 流体储罐属性数组
+     * @return 数组：[0]=总容量, [1]=当前量, [2]=可用空间
+     */
+    private int[] calculateFluidContainerSpace(IFluidTankProperties[] tankProperties) {
+        int totalCapacity = 0;
+        int currentAmount = 0;
+
+        if (tankProperties != null) {
+            for (IFluidTankProperties prop : tankProperties) {
+                if (prop != null) {
+                    totalCapacity += prop.getCapacity();
+                    FluidStack contents = prop.getContents();
+                    if (contents != null) {
+                        currentAmount += contents.amount;
+                    }
+                }
+            }
+        }
+
+        int availableSpace = totalCapacity - currentAmount;
+        return new int[]{totalCapacity, currentAmount, availableSpace};
+    }
+
+    /**
+     * 填充单个流体容器
+     * @param container 要填充的容器
+     * @return 填充后的容器，如果失败返回null
+     */
+    private ItemStack fillSingleContainer(ItemStack container) {
+        IFluidHandlerItem fluidHandler = container.getCapability(
+            CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+        if (fluidHandler == null) {
+            return null;
+        }
+
+        IFluidTankProperties[] tankProps = fluidHandler.getTankProperties();
+        if (tankProps == null || tankProps.length == 0) {
+            return null;
+        }
+
+        int[] spaceInfo = calculateFluidContainerSpace(tankProps);
+        int availableSpace = spaceInfo[2];
+
+        if (availableSpace <= 0) {
+            return null;
+        }
+
+        int actualFilled = fluidHandler.fill(new FluidStack(getProvidedFluid(), availableSpace), true);
+        if (actualFilled <= 0) {
+            return null;
+        }
+
+        return fluidHandler.getContainer();
     }
 
     @Override
@@ -439,7 +595,7 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
     
     @Override
     public int getMaxOutputRate() {
-        return Integer.MAX_VALUE; // 2.1G
+        return Integer.MAX_VALUE;
     }
     
     @Override

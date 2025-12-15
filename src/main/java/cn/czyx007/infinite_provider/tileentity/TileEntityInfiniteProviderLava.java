@@ -170,20 +170,4 @@ public class TileEntityInfiniteProviderLava extends TileEntityInfiniteProviderBa
         
         return compound;
     }
-    
-    /**
-     * 获取集群加成倍数
-     * @return 集群加成倍数
-     */
-    public float getClusterBonus() {
-        return clusterBonus;
-    }
-    
-    /**
-     * 获取是否为集群的一部分
-     * @return 是否为集群的一部分
-     */
-    public boolean isPartOfCluster() {
-        return isPartOfCluster;
-    }
 }

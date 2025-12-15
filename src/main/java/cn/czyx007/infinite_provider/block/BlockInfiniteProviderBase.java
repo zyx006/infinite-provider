@@ -10,6 +10,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -56,6 +58,24 @@ public abstract class BlockInfiniteProviderBase extends Block {
                 provider.onLeftClick(player, isShiftClick);
             }
         }
+    }
+    
+    @Override
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, 
+                                   EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (hand == EnumHand.MAIN_HAND) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof TileEntityInfiniteProviderBase) {
+                if (!world.isRemote) {
+                    TileEntityInfiniteProviderBase provider = (TileEntityInfiniteProviderBase) te;
+                    boolean isShiftClick = player.isSneaking();
+                    provider.onRightClick(player, isShiftClick);
+                }
+                // 在客户端和服务端都返回true，防止触发物品的右键使用事件
+                return true;
+            }
+        }
+        return false;
     }
     
     @Override
