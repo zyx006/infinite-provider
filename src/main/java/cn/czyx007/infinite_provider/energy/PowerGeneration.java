@@ -227,7 +227,7 @@ public class PowerGeneration {
      */
     public static float calculateLavaClusterBonus(World world, BlockPos bottomWaterPos) {
         if (!GeneratorConfig.lavaClusterBonus.enableClusterDetection) {
-            return 1.0f;
+            return SINGLE_BONUS;
         }
 
         if (world == null || bottomWaterPos == null) {
@@ -239,16 +239,14 @@ public class PowerGeneration {
 
         // 检查单个岩浆供应器
         if (isLavaProvider(world, lavaCheckPos)) {
-            // 检查是否为3×3集群
             if (isLavaCluster(world, lavaCheckPos, 1)) {
+                // 检查是否为3×3集群
                 return CLUSTER_BONUS;
-            }
-            // 检查是否为侧面4个
-            else if (isLavaSideGroup(world, lavaCheckPos)) {
+            } else if (isLavaSideGroup(world, lavaCheckPos)) {
+                // 检查是否为侧面4个
                 return SIDE_BONUS;
-            }
-            // 单个岩浆供应器
-            else {
+            } else {
+                // 单个岩浆供应器
                 return SINGLE_BONUS;
             }
         }

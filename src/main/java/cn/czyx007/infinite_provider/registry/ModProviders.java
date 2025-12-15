@@ -5,10 +5,10 @@ import cn.czyx007.infinite_provider.block.BlockInfiniteProviderBase;
 import cn.czyx007.infinite_provider.block.BlockInfiniteProviderCobblestone;
 import cn.czyx007.infinite_provider.block.BlockInfiniteProviderLava;
 import cn.czyx007.infinite_provider.block.BlockInfiniteProviderWater;
+import cn.czyx007.infinite_provider.item.ItemBlockInfiniteProvider;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
@@ -63,7 +63,7 @@ public class ModProviders {
     }
     
     private static void registerItemBlock(RegistryEvent.Register<Item> event, BlockInfiniteProviderBase block) {
-        event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+        event.getRegistry().register(new ItemBlockInfiniteProvider(block).setRegistryName(block.getRegistryName()));
     }
     
     @SideOnly(Side.CLIENT)

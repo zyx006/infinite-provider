@@ -14,6 +14,27 @@ item.infinite_provider.infinite_provider_lava.name=无限岩浆供应器
 itemGroup.infinite_provider=无限供应器
 
 # 提示信息
-infinite_provider.tooltip.cobblestone=提供无限的圆石
-infinite_provider.tooltip.water=提供无限的水源，站在上面可以灭火
-infinite_provider.tooltip.lava=提供无限的岩浆源，站在上面会受到火焰伤害
+infinite_provider.tooltip.cobblestone=§7提供无限的圆石
+infinite_provider.tooltip.water=§7提供无限的水源，站在上面可以灭火
+infinite_provider.tooltip.lava=§7提供无限的岩浆源，站在上面会受到火焰伤害
+infinite_provider.tooltip.shift_for_more=§8[§7按住 §fShift §7查看更多信息§8]
+
+# 发电系统提示信息
+infinite_provider.tooltip.generator.title=§6§l发电系统：
+infinite_provider.tooltip.generator.water.level1=§7  • 1个水供应器：§b%s RF/t
+infinite_provider.tooltip.generator.water.level2=§7  • 2个水供应器：§b%s RF/t
+infinite_provider.tooltip.generator.water.level3=§7  • 3个水供应器：§b%s RF/t
+infinite_provider.tooltip.generator.water.level4=§7  • 4个水供应器：§b%s RF/t
+infinite_provider.tooltip.generator.water.level5=§7  • 5个水供应器：§b%s RF/t
+infinite_provider.tooltip.generator.water.level6=§7  • 6个水供应器：§b%s RF/t
+infinite_provider.tooltip.generator.water.level7=§7  • 7个水供应器：§b%s RF/t
+infinite_provider.tooltip.generator.water.level8=§7  • 8个及以上水供应器：§b%s RF/t
+infinite_provider.tooltip.generator.water.structure=§8需要：§7垂直堆叠水供应器，底部放置岩浆供应器
+infinite_provider.tooltip.generator.water.energy=§8能量储量：§b%s RF §8| 最大输出：§b%s RF/t
+
+infinite_provider.tooltip.generator.lava.title=§6§l发电加成：
+infinite_provider.tooltip.generator.lava.single=§7  • 单个岩浆供应器：§c%s
+infinite_provider.tooltip.generator.lava.cross=§7  • 十字形集群§8(§75个§8)§7：§c%s
+infinite_provider.tooltip.generator.lava.cluster=§7  • 3x3集群§8(§79个§8)§7：§c%s
+infinite_provider.tooltip.generator.lava.structure=§8作为水供应器发电系统的底座提供加成
+

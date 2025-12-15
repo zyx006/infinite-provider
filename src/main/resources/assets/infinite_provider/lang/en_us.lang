@@ -13,7 +13,28 @@ item.infinite_provider.infinite_provider_lava.name=Infinite Lava Provider
 # Creative Tab
 itemGroup.infinite_provider=Infinite Provider
 
-# Tooltip Information
-infinite_provider.tooltip.cobblestone=Provides infinite cobblestone
-infinite_provider.tooltip.water=Provides infinite water source, extinguishes fire when stood on
-infinite_provider.tooltip.lava=Provides infinite lava source, causes fire damage when stood on
+# Tooltips
+infinite_provider.tooltip.cobblestone=§7Provides infinite cobblestone
+infinite_provider.tooltip.water=§7Provides infinite water, standing on it extinguishes fire
+infinite_provider.tooltip.lava=§7Provides infinite lava, standing on it causes fire damage
+infinite_provider.tooltip.shift_for_more=§8[§7Hold §fShift §7for more information§8]
+
+# Generator System Tooltips
+infinite_provider.tooltip.generator.title=§6§lGenerator System:
+infinite_provider.tooltip.generator.water.level1=§7  • 1 Water Provider: §b%s RF/t
+infinite_provider.tooltip.generator.water.level2=§7  • 2 Water Providers: §b%s RF/t
+infinite_provider.tooltip.generator.water.level3=§7  • 3 Water Providers: §b%s RF/t
+infinite_provider.tooltip.generator.water.level4=§7  • 4 Water Providers: §b%s RF/t
+infinite_provider.tooltip.generator.water.level5=§7  • 5 Water Providers: §b%s RF/t
+infinite_provider.tooltip.generator.water.level6=§7  • 6 Water Providers: §b%s RF/t
+infinite_provider.tooltip.generator.water.level7=§7  • 7 Water Providers: §b%s RF/t
+infinite_provider.tooltip.generator.water.level8=§7  • 8+ Water Providers: §b%s RF/t
+infinite_provider.tooltip.generator.water.structure=§8Required: §7Stack water providers vertically, place lava provider at bottom
+infinite_provider.tooltip.generator.water.energy=§8Energy Capacity: §b%s RF §8| Max Output: §b%s RF/t
+
+infinite_provider.tooltip.generator.lava.title=§6§lPower Bonus:
+infinite_provider.tooltip.generator.lava.single=§7  • Single Lava Provider: §c%s
+infinite_provider.tooltip.generator.lava.cross=§7  • Cross Cluster §8(§75§8)§7: §c%s
+infinite_provider.tooltip.generator.lava.cluster=§7  • 3x3 Cluster §8(§79§8)§7: §c%s
+infinite_provider.tooltip.generator.lava.structure=§8Acts as base for water provider generator, providing bonus
+
