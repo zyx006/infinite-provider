@@ -64,53 +64,42 @@ public class TileEntityInfiniteProviderWater extends TileEntityInfiniteProviderB
     public void update() {
         super.update();
 
-        // 每秒更新一次状态
-        boolean needsUpdate = false;
-        if (!world.isRemote && tickCounter++ % 20 == 0) {
-            needsUpdate = true;
+        if (world.isRemote) {
+            return; // 只在服务端执行
         }
 
-        // 检查是否为第一次运行
-        if (!world.isRemote && tickCounter == 1) {
-            needsUpdate = true;
+        tickCounter++;
+
+        // 每秒更新一次发电状态 (20 ticks)
+        if (tickCounter % 20 == 0) {
+            updatePowerGeneration();
         }
 
-        // 检查上方是否新增了水供应器
-        if (!world.isRemote && tickCounter % 5 == 0) { // 每5tick检查一次上方
+        // 每5tick检查一次上方是否有变化
+        if (tickCounter % 5 == 0) {
             BlockPos abovePos = pos.up();
             TileEntity aboveTE = world.getTileEntity(abovePos);
             boolean hasAboveWater = aboveTE instanceof TileEntityInfiniteProviderWater;
 
-            // 如果上方有水供应器且当前是顶层供应器，则需要更新
-            if (hasAboveWater && isTopProvider) {
-                needsUpdate = true;
-            }
-
-            // 如果上方没有水供应器且当前不是顶层供应器，则需要更新
-            if (!hasAboveWater && !isTopProvider) {
-                needsUpdate = true;
+            // 如果上方状态与预期不符，需要更新
+            if ((hasAboveWater && isTopProvider) || (!hasAboveWater && !isTopProvider)) {
+                updatePowerGeneration();
             }
         }
 
-        if (needsUpdate) {
-            updatePowerGeneration();
+        // 只有顶部水供应器才能生成能量
+        if (isTopProvider && isGenerating) {
+            generatePower();
         }
 
-        if (!world.isRemote) {
-            // 只有顶部水供应器才能生成能量
-            if (isTopProvider && isGenerating) {
-                generatePower();
-            }
+        // 非顶部水供应器向上传递能量到顶部
+        if (!isTopProvider && energyStorage.getEnergyStored() > 0) {
+            transferEnergyUpward();
+        }
 
-            // 非顶部水供应器向上传递能量到顶部
-            if (!isTopProvider && energyStorage.getEnergyStored() > 0) {
-                transferEnergyUpward();
-            }
-
-            // 只有顶部水供应器才能对外输出能量
-            if (isTopProvider && energyStorage.getEnergyStored() > 0) {
-                outputEnergyToAllSides();
-            }
+        // 只有顶部水供应器才能对外输出能量
+        if (isTopProvider && energyStorage.getEnergyStored() > 0) {
+            outputEnergyToAllSides();
         }
     }
 
@@ -146,11 +135,13 @@ public class TileEntityInfiniteProviderWater extends TileEntityInfiniteProviderB
      * 通知水供应器链更新状态
      */
     private void notifyWaterChainUpdate() {
-        if (world == null) return;
+        if (world == null) {
+            return;
+        }
 
         // 通知下方的水供应器更新
         BlockPos currentPos = pos.down();
-        for (int i = 0; i < 8; i++) { // 最多检查8个水供应器
+        while (true) {
             TileEntity te = world.getTileEntity(currentPos);
             if (te instanceof TileEntityInfiniteProviderWater) {
                 TileEntityInfiniteProviderWater waterProvider = (TileEntityInfiniteProviderWater) te;
@@ -161,9 +152,9 @@ public class TileEntityInfiniteProviderWater extends TileEntityInfiniteProviderB
             }
         }
 
-        // 通知上方的水供应器更新（如果有）
+        // 通知上方的水供应器更新
         currentPos = pos.up();
-        for (int i = 0; i < 8; i++) { // 最多检查8个水供应器
+        while (true) {
             TileEntity te = world.getTileEntity(currentPos);
             if (te instanceof TileEntityInfiniteProviderWater) {
                 TileEntityInfiniteProviderWater waterProvider = (TileEntityInfiniteProviderWater) te;
@@ -280,7 +271,7 @@ public class TileEntityInfiniteProviderWater extends TileEntityInfiniteProviderB
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+    public boolean hasCapability(@javax.annotation.Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
         // 只有顶部水供应器才对外暴露能量能力
         if (capability == CapabilityEnergy.ENERGY) {
             return isTopProvider;
@@ -291,7 +282,7 @@ public class TileEntityInfiniteProviderWater extends TileEntityInfiniteProviderB
 
     @Nullable
     @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+    public <T> T getCapability(@javax.annotation.Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
         // 只有顶部水供应器才返回能量存储（防止外界提取）
         if (capability == CapabilityEnergy.ENERGY) {
             if (isTopProvider) {
@@ -304,7 +295,7 @@ public class TileEntityInfiniteProviderWater extends TileEntityInfiniteProviderB
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
+    public void readFromNBT(@javax.annotation.Nonnull NBTTagCompound compound) {
         super.readFromNBT(compound);
 
         // 读取能量存储（所有水供应器都保存，以便传递）
@@ -319,7 +310,8 @@ public class TileEntityInfiniteProviderWater extends TileEntityInfiniteProviderB
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+    @javax.annotation.Nonnull
+    public NBTTagCompound writeToNBT(@javax.annotation.Nonnull NBTTagCompound compound) {
         super.writeToNBT(compound);
 
         // 保存能量存储（所有水供应器都保存，以便传递）
@@ -386,7 +378,7 @@ public class TileEntityInfiniteProviderWater extends TileEntityInfiniteProviderB
 
     @Override
     public boolean isGeneratingEnergy() {
-        return energyStorage != null ? energyStorage.isGenerating() : false;
+        return energyStorage != null && energyStorage.isGenerating();
     }
 
     @Override

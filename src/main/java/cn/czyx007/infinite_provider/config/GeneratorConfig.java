@@ -101,13 +101,6 @@ public class GeneratorConfig {
     }
     
     /**
-     * 同步配置
-     */
-    public static void syncConfig() {
-        ConfigManager.sync(Tags.MOD_ID, Config.Type.INSTANCE);
-    }
-    
-    /**
      * 获取基础发电量数组
      * @return 基础发电量数组
      */
@@ -126,7 +119,7 @@ public class GeneratorConfig {
     
     /**
      * 获取岩浆集群加成倍数数组
-     * @return 岩浆集群加成倍数数组 [单个, 3x3, 3x3x3]
+     * @return 岩浆集群加成倍数数组 [单个, 十字, 3x3]
      */
     public static double[] getLavaClusterBonuses() {
         return new double[] {

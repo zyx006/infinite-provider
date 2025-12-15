@@ -58,47 +58,4 @@ public class EnergyCompatibility {
         
         return 0;
     }
-    
-    /**
-     * 获取相邻方块的能量存储信息
-     * @param world 世界对象
-     * @param pos 当前位置
-     * @param direction 检查方向
-     * @return 能量存储对象，如果没有则返回null
-     */
-    public static IEnergyStorage getAdjacentEnergyStorage(World world, BlockPos pos, EnumFacing direction) {
-        if (world == null) return null;
-        
-        BlockPos targetPos = pos.offset(direction);
-        TileEntity targetTE = world.getTileEntity(targetPos);
-        
-        if (targetTE != null && targetTE.hasCapability(CapabilityEnergy.ENERGY, direction.getOpposite())) {
-            return targetTE.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite());
-        }
-        
-        return null;
-    }
-    
-    /**
-     * 检查TileEntity是否有能量能力
-     * @param te TileEntity对象
-     * @param direction 方向
-     * @return 是否有能量能力
-     */
-    public static boolean hasEnergyCapability(TileEntity te, EnumFacing direction) {
-        return te != null && te.hasCapability(CapabilityEnergy.ENERGY, direction);
-    }
-    
-    /**
-     * 获取TileEntity的能量能力
-     * @param te TileEntity对象
-     * @param direction 方向
-     * @return 能量存储对象
-     */
-    public static IEnergyStorage getEnergyCapability(TileEntity te, EnumFacing direction) {
-        if (te != null && te.hasCapability(CapabilityEnergy.ENERGY, direction)) {
-            return te.getCapability(CapabilityEnergy.ENERGY, direction);
-        }
-        return null;
-    }
 }

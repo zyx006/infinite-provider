@@ -69,11 +69,4 @@ public abstract class BlockInfiniteProviderBase extends Block {
     public String getTypeName() {
         return typeName;
     }
-
-    /**
-     * 获取对应的物品
-     */
-    public Item getItemBlock() {
-        return Item.getItemFromBlock(this);
-    }
 }
