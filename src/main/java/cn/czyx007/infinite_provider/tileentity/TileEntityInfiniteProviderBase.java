@@ -4,6 +4,7 @@ import cn.czyx007.infinite_provider.output.IOutputProvider;
 import cn.czyx007.infinite_provider.output.OutputScheduler;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -32,6 +33,11 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
     // 输出系统相关
     protected OutputScheduler outputScheduler;
     protected OutputState outputState = OutputState.DEFAULT;
+
+    // 双击检测相关
+    private static final long DOUBLE_CLICK_INTERVAL = 500; // 500ms内算双击
+    private long lastRightClickTime = 0;
+    private String lastRightClickPlayerUUID = "";
 
     /**
      * 获取供应器提供的物品
@@ -101,7 +107,22 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
         @Override
         @Nonnull
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return stack; // 无限供应器不接受物品输入
+            if (stack.isEmpty()) {
+                return stack;
+            }
+
+            // 检查是否是同种物品
+            ItemStack providedItem = getProvidedItem();
+            if (providedItem != null && !providedItem.isEmpty()) {
+                if (ItemStack.areItemsEqual(stack, providedItem) &&
+                    ItemStack.areItemStackTagsEqual(stack, providedItem)) {
+                    // 接受同种物品输入（销毁）
+                    return ItemStack.EMPTY; // 返回空表示全部接受
+                }
+            }
+
+            // 不是同种物品，拒绝输入
+            return stack;
         }
 
         @Override
@@ -144,7 +165,7 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
 
                         @Override
                         public boolean canFill() {
-                            return false;
+                            return true; // 允许填充同种流体
                         }
 
                         @Override
@@ -154,7 +175,8 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
 
                         @Override
                         public boolean canFillFluidType(FluidStack fluidStack) {
-                            return false;
+                            // 只能填充同种流体
+                            return fluidStack != null && fluidStack.getFluid() == fluid;
                         }
 
                         @Override
@@ -169,11 +191,23 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
 
         @Override
         public int fill(FluidStack resource, boolean doFill) {
-            return 0; // 无限供应器不接受流体输入
+            if (resource == null || resource.amount <= 0) {
+                return 0;
+            }
+
+            // 检查是否是同种流体
+            Fluid providedFluid = getProvidedFluid();
+            if (providedFluid != null && resource.getFluid() == providedFluid) {
+                // 接受同种流体输入（销毁）
+                return resource.amount; // 返回输入量表示全部接受
+            }
+
+            // 不是同种流体，拒绝输入
+            return 0;
         }
 
         @Override
-        @javax.annotation.Nullable
+        @Nullable
         public FluidStack drain(FluidStack resource, boolean doDrain) {
             Fluid fluid = getProvidedFluid();
             if (fluid != null && resource != null && resource.getFluid() == fluid) {
@@ -183,7 +217,7 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
         }
 
         @Override
-        @javax.annotation.Nullable
+        @Nullable
         public FluidStack drain(int maxDrain, boolean doDrain) {
             Fluid fluid = getProvidedFluid();
             if (fluid != null) {
@@ -214,69 +248,318 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
     
     /**
      * 处理玩家右键交互
+     * 优化后的逻辑：
+     * - 单击右键：放入手持的所有同种物品/流体容器
+     * - 双击右键：放入背包中所有同种物品/流体容器
      */
-    public void onRightClick(EntityPlayer player, boolean isShiftClick) {
+    public void onRightClick(EntityPlayer player) {
+        // 检测是否双击（必须在检查手持物品之前！）
+        boolean isDoubleClick = false;
+        if (!world.isRemote) {
+            long currentTime = System.currentTimeMillis();
+            String playerUUID = player.getUniqueID().toString();
+            
+            if (playerUUID.equals(lastRightClickPlayerUUID) && 
+                (currentTime - lastRightClickTime) <= DOUBLE_CLICK_INTERVAL) {
+                isDoubleClick = true;
+            }
+            
+            lastRightClickTime = currentTime;
+            lastRightClickPlayerUUID = playerUUID;
+        }
+
+        // 双击模式：即使手持物品为空，也要处理背包中的物品
+        if (isDoubleClick) {
+            // 获取供应器提供的物品类型
+            ItemStack providedItem = getProvidedItem();
+            if (providedItem != null && !providedItem.isEmpty()) {
+                IItemHandler itemHandler = getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+                if (itemHandler != null) {
+                    int totalAccepted = acceptAllMatchingItemsFromInventory(player, providedItem, itemHandler);
+                    if (totalAccepted > 0) {
+                        player.inventoryContainer.detectAndSendChanges();
+                        return;
+                    }
+                }
+            }
+
+            // 流体容器的双击处理
+            Fluid providedFluid = getProvidedFluid();
+            if (providedFluid != null) {
+                int processedCount = acceptAllMatchingFluidContainersFromInventory(player, providedFluid);
+                if (processedCount > 0) {
+                    player.inventoryContainer.detectAndSendChanges();
+                    return;
+                }
+            }
+
+            // 双击处理完成，直接返回
+            return;
+        }
+
+        // 单击模式：只处理手持物品
         ItemStack heldItem = player.getHeldItemMainhand();
-        
+
         if (heldItem.isEmpty()) {
             return;
         }
-        
-        // 检查是否是同种物品
+
+        // 首先尝试处理同种物品输入（通过物品 Capability）
+        if (tryAcceptMatchingItemViaCapability(player, heldItem)) {
+            return;
+        }
+
+        // 然后尝试处理同种流体容器输入（通过流体 Capability）
+        tryAcceptMatchingFluidContainerViaCapability(player, heldItem);
+    }
+
+    /**
+     * 通过物品 Capability 接受匹配的物品输入（仅单击模式）
+     * @return 是否成功处理
+     */
+    private boolean tryAcceptMatchingItemViaCapability(EntityPlayer player, ItemStack heldItem) {
         ItemStack providedItem = getProvidedItem();
-        if (providedItem != null && !providedItem.isEmpty()) {
-            if (ItemStack.areItemsEqual(heldItem, providedItem) && 
-                ItemStack.areItemStackTagsEqual(heldItem, providedItem)) {
-                // 接受同种物品输入（直接消耗掉）
-                heldItem.shrink(heldItem.getCount());
-                player.inventoryContainer.detectAndSendChanges();
-                return;
+        if (providedItem == null || providedItem.isEmpty()) {
+            return false;
+        }
+
+        // 检查手持物品是否是同种物品
+        if (!ItemStack.areItemsEqual(heldItem, providedItem) ||
+            !ItemStack.areItemStackTagsEqual(heldItem, providedItem)) {
+            return false;
+        }
+
+        IItemHandler itemHandler = getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        if (itemHandler == null) {
+            return false;
+        }
+
+        // 单击右键：放入手持的所有物品
+        ItemStack toInsert = heldItem.copy();
+        ItemStack remaining = itemHandler.insertItem(0, toInsert, false);
+        int totalAccepted = toInsert.getCount() - remaining.getCount();
+        if (totalAccepted > 0) {
+            heldItem.shrink(totalAccepted);
+            player.inventoryContainer.detectAndSendChanges();
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 从背包中接受所有匹配的物品
+     * @return 接受的物品总数
+     */
+    private int acceptAllMatchingItemsFromInventory(EntityPlayer player, ItemStack template, 
+                                                     IItemHandler itemHandler) {
+        int totalAccepted = 0;
+
+        // 遍历整个背包（包括手持）
+        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+            ItemStack slotStack = player.inventory.getStackInSlot(i);
+            
+            if (slotStack.isEmpty()) {
+                continue;
+            }
+
+            // 检查是否是同种物品
+            if (ItemStack.areItemsEqual(slotStack, template) &&
+                ItemStack.areItemStackTagsEqual(slotStack, template)) {
+
+                // 尝试输入（销毁）
+                ItemStack remaining = itemHandler.insertItem(0, slotStack.copy(), false);
+                int accepted = slotStack.getCount() - remaining.getCount();
+                
+                if (accepted > 0) {
+                    totalAccepted += accepted;
+                    
+                    // 更新槽位内容
+                    int newCount = slotStack.getCount() - accepted;
+                    if (newCount <= 0) {
+                        // 如果槽位空了，清空它
+                        player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
+                    } else {
+                        // 否则更新数量
+                        slotStack.setCount(newCount);
+                        player.inventory.setInventorySlotContents(i, slotStack);
+                    }
+                }
             }
         }
-        
-        // 检查是否是装有同种流体的容器
+
+        return totalAccepted;
+    }
+
+    /**
+     * 通过流体 Capability 接受匹配的流体容器输入（仅单击模式）
+     */
+    private void tryAcceptMatchingFluidContainerViaCapability(EntityPlayer player, ItemStack heldItem) {
         Fluid providedFluid = getProvidedFluid();
-        if (providedFluid != null && isFluidContainer(heldItem)) {
-            // 创建单个容器的副本进行处理
+        if (providedFluid == null || !isFluidContainer(heldItem)) {
+            return;
+        }
+
+        // 单击右键：处理手持的所有容器
+        int currentSlot = player.inventory.currentItem;
+        int maxProcess = heldItem.getCount();
+        int processedCount = processFluidContainers(player, heldItem, currentSlot, maxProcess, providedFluid);
+
+        if (processedCount > 0) {
+            player.inventoryContainer.detectAndSendChanges();
+        }
+    }
+
+    /**
+     * 处理指定数量的流体容器
+     * @return 实际处理的容器数量
+     */
+    private int processFluidContainers(EntityPlayer player, ItemStack heldItem, int currentSlot, 
+                                       int maxProcess, Fluid providedFluid) {
+        int processedCount = 0;
+
+        for (int i = 0; i < maxProcess; i++) {
+            if (heldItem.isEmpty()) {
+                break;
+            }
+
+            // 创建单个容器的副本
             ItemStack singleContainer = heldItem.copy();
             singleContainer.setCount(1);
-            
-            IFluidHandlerItem fluidHandler = singleContainer.getCapability(
-                CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
-            if (fluidHandler != null) {
-                IFluidTankProperties[] props = fluidHandler.getTankProperties();
-                if (props != null && props.length > 0) {
-                    FluidStack contents = props[0].getContents();
-                    if (contents != null && contents.getFluid() == providedFluid) {
-                        // 接受同种流体输入（清空容器）
-                        FluidStack drained = fluidHandler.drain(Integer.MAX_VALUE, true);
-                        if (drained != null && drained.amount > 0) {
-                            // 从副本的FluidHandler获取清空后的容器
-                            ItemStack emptyContainer = fluidHandler.getContainer();
-                            
-                            // 消耗原手持物品中的一个
-                            heldItem.shrink(1);
-                            
-                            // 处理空容器的放置
-                            int currentSlot = player.inventory.currentItem;
-                            if (heldItem.getCount() <= 0) {
-                                // 手持槽空了，直接放空容器
-                                player.inventory.setInventorySlotContents(currentSlot, emptyContainer);
-                            } else {
-                                // 手持槽还有容器，尝试添加到背包
-                                if (!player.inventory.addItemStackToInventory(emptyContainer)) {
-                                    // 背包满了，丢出空容器
-                                    if (!player.world.isRemote) {
-                                        player.dropItem(emptyContainer, false);
-                                    }
-                                }
-                            }
-                            player.inventoryContainer.detectAndSendChanges();
+
+            // 尝试排空容器（通过流体 Capability）
+            ItemStack emptyContainer = drainContainerViaCapability(singleContainer, providedFluid);
+            if (emptyContainer == null) {
+                break; // 容器不匹配或无法排空，停止处理
+            }
+
+            // 消耗原容器
+            heldItem.shrink(1);
+            processedCount++;
+
+            // 处理空容器的放置
+            boolean slotIsEmpty = heldItem.getCount() <= 0;
+            if (slotIsEmpty) {
+                // 手持槽空了，直接放空容器
+                player.inventory.setInventorySlotContents(currentSlot, emptyContainer);
+                // 更新heldItem引用，以便继续处理
+                heldItem = player.getHeldItemMainhand();
+            } else {
+                // 手持槽还有容器，尝试添加空容器到背包
+                if (!player.inventory.addItemStackToInventory(emptyContainer)) {
+                    // 背包满了，丢出空容器
+                    if (!player.world.isRemote) {
+                        player.dropItem(emptyContainer, false);
+                    }
+                }
+            }
+        }
+
+        return processedCount;
+    }
+
+    /**
+     * 从背包中接受所有匹配的流体容器
+     * @return 处理的容器总数
+     */
+    private int acceptAllMatchingFluidContainersFromInventory(EntityPlayer player, Fluid providedFluid) {
+        int totalProcessed = 0;
+
+        // 遍历整个背包
+        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+            ItemStack slotStack = player.inventory.getStackInSlot(i);
+
+            if (slotStack.isEmpty() || !isFluidContainer(slotStack)) {
+                continue;
+            }
+
+            // 检查容器中是否包含目标流体
+            IFluidHandlerItem fluidHandler = getFluidHandler(slotStack.copy());
+            if (fluidHandler == null) {
+                continue;
+            }
+
+            IFluidTankProperties[] props = fluidHandler.getTankProperties();
+            if (props == null || props.length == 0) {
+                continue;
+            }
+
+            FluidStack contents = props[0].getContents();
+            if (contents == null || contents.getFluid() != providedFluid) {
+                continue; // 不是目标流体
+            }
+
+            // 逐个处理该槽位的所有容器
+            int containerCount = slotStack.getCount();
+            for (int j = 0; j < containerCount; j++) {
+                ItemStack singleContainer = slotStack.copy();
+                singleContainer.setCount(1);
+
+                ItemStack emptyContainer = drainContainerViaCapability(singleContainer, providedFluid);
+                if (emptyContainer == null) {
+                    break;
+                }
+
+                // 消耗原容器
+                slotStack.shrink(1);
+                totalProcessed++;
+
+                // 尝试放入空容器
+                if (slotStack.getCount() <= 0) {
+                    // 原槽位空了，放入空容器
+                    player.inventory.setInventorySlotContents(i, emptyContainer);
+                    slotStack = emptyContainer; // 更新引用
+                } else {
+                    // 尝试添加到背包
+                    if (!player.inventory.addItemStackToInventory(emptyContainer)) {
+                        // 背包满了，丢出
+                        if (!player.world.isRemote) {
+                            player.dropItem(emptyContainer, false);
                         }
                     }
                 }
             }
         }
+
+        return totalProcessed;
+    }
+
+    /**
+     * 通过流体 Capability 排空流体容器（如果包含匹配的流体）
+     * @param container 要排空的容器
+     * @param requiredFluid 需要的流体类型
+     * @return 排空后的容器，如果不匹配或失败则返回null
+     */
+    private ItemStack drainContainerViaCapability(ItemStack container, Fluid requiredFluid) {
+        IFluidHandlerItem fluidHandler = getFluidHandler(container);
+        if (fluidHandler == null) {
+            return null;
+        }
+
+        // 检查容器内容
+        IFluidTankProperties[] props = fluidHandler.getTankProperties();
+        if (props == null || props.length == 0) {
+            return null;
+        }
+
+        FluidStack contents = props[0].getContents();
+        if (contents == null || contents.getFluid() != requiredFluid) {
+            return null; // 容器为空或流体类型不匹配
+        }
+
+        // 排空容器，然后通过供应器的 Capability 接受（销毁）
+        FluidStack drained = fluidHandler.drain(Integer.MAX_VALUE, true);
+        if (drained == null || drained.amount <= 0) {
+            return null;
+        }
+
+        // 通过 Capability 接受流体（会被销毁）
+        IFluidHandler providerFluidHandler = getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+        if (providerFluidHandler != null) {
+            providerFluidHandler.fill(drained, true);
+        }
+
+        return fluidHandler.getContainer();
     }
 
     /**
@@ -296,33 +579,15 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
         // 尝试给玩家物品
         if (player.inventory.addItemStackToInventory(stackToGive)) {
             player.inventoryContainer.detectAndSendChanges();
-        } else {
-            // 如果背包满了，尝试逐个放入
-            int actuallyGiven = 0;
-            int maxStackSize = stackToGive.getMaxStackSize();
-
-            if (isShiftClick) {
-                // Shift+点击时，尝试逐个放入直到背包满或达到最大堆叠数
-                for (int i = 0; i < maxStackSize; i++) {
-                    ItemStack singleItem = stackToGive.copy();
-                    singleItem.setCount(1);
-                    if (player.inventory.addItemStackToInventory(singleItem)) {
-                        actuallyGiven++;
-                    } else {
-                        break;
-                    }
+        } else if (isShiftClick) {
+            // 如果背包满了但是Shift+点击，计算剩余容量并批量放入
+            int remainingCapacity = calculateInventoryCapacity(player.inventory, providedItem);
+            if (remainingCapacity > 0) {
+                ItemStack partialStack = providedItem.copy();
+                partialStack.setCount(remainingCapacity);
+                if (player.inventory.addItemStackToInventory(partialStack)) {
+                    player.inventoryContainer.detectAndSendChanges();
                 }
-            } else {
-                // 单击时，只尝试放入1个
-                ItemStack singleItem = stackToGive.copy();
-                singleItem.setCount(1);
-                if (player.inventory.addItemStackToInventory(singleItem)) {
-                    actuallyGiven = 1;
-                }
-            }
-
-            if (actuallyGiven > 0) {
-                player.inventoryContainer.detectAndSendChanges();
             }
         }
     }
@@ -466,6 +731,58 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
     }
 
     /**
+     * 获取物品的流体处理器
+     * @param stack 要检查的物品
+     * @return 流体处理器，如果物品没有流体处理能力则返回null
+     */
+    @Nullable
+    private IFluidHandlerItem getFluidHandler(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) {
+            return null;
+        }
+
+        if (!stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
+            return null;
+        }
+
+        return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+    }
+
+    /**
+     * 计算背包对于特定物品的剩余容量
+     * @param inventory 玩家背包
+     * @param itemTemplate 要放入的物品模板
+     * @return 还能放入的物品数量
+     */
+    private int calculateInventoryCapacity(InventoryPlayer inventory, ItemStack itemTemplate) {
+        if (itemTemplate == null || itemTemplate.isEmpty()) {
+            return 0;
+        }
+
+        int capacity = 0;
+        int maxStackSize = itemTemplate.getMaxStackSize();
+
+        // 遍历主背包（不包括盔甲槽和副手槽）
+        for (int i = 0; i < inventory.mainInventory.size(); i++) {
+            ItemStack slotStack = inventory.mainInventory.get(i);
+
+            if (slotStack.isEmpty()) {
+                // 空槽位可以放满整组
+                capacity += maxStackSize;
+            } else if (ItemStack.areItemsEqual(slotStack, itemTemplate) &&
+                       ItemStack.areItemStackTagsEqual(slotStack, itemTemplate)) {
+                // 同种物品且NBT相同，可以叠加
+                int spaceInSlot = maxStackSize - slotStack.getCount();
+                if (spaceInSlot > 0) {
+                    capacity += spaceInSlot;
+                }
+            }
+        }
+
+        return capacity;
+    }
+
+    /**
      * 计算流体容器的可用空间
      * @param tankProperties 流体储罐属性数组
      * @return 数组：[0]=总容量, [1]=当前量, [2]=可用空间
@@ -496,8 +813,7 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
      * @return 填充后的容器，如果失败返回null
      */
     private ItemStack fillSingleContainer(ItemStack container) {
-        IFluidHandlerItem fluidHandler = container.getCapability(
-            CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+        IFluidHandlerItem fluidHandler = getFluidHandler(container);
         if (fluidHandler == null) {
             return null;
         }
@@ -660,3 +976,9 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
     }
 
 }
+
+
+
+
+
+

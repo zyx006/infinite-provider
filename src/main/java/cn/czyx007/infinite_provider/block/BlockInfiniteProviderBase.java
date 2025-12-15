@@ -68,8 +68,7 @@ public abstract class BlockInfiniteProviderBase extends Block {
             if (te instanceof TileEntityInfiniteProviderBase) {
                 if (!world.isRemote) {
                     TileEntityInfiniteProviderBase provider = (TileEntityInfiniteProviderBase) te;
-                    boolean isShiftClick = player.isSneaking();
-                    provider.onRightClick(player, isShiftClick);
+                    provider.onRightClick(player);
                 }
                 // 在客户端和服务端都返回true，防止触发物品的右键使用事件
                 return true;
