@@ -1,7 +1,7 @@
 package cn.czyx007.infinite_provider.tileentity;
 
 import cn.czyx007.infinite_provider.Tags;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import cn.czyx007.infinite_provider.api.ProviderRegistry;
 
 /**
  * 无限供应器TileEntity注册类
@@ -9,8 +9,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class ModTileEntities {
     
     public static void registerTileEntities() {
-        GameRegistry.registerTileEntity(TileEntityInfiniteProviderCobblestone.class, Tags.MOD_ID + "_cobblestone");
-        GameRegistry.registerTileEntity(TileEntityInfiniteProviderWater.class, Tags.MOD_ID + "_water");
-        GameRegistry.registerTileEntity(TileEntityInfiniteProviderLava.class, Tags.MOD_ID + "_lava");
+        // 注册内置TileEntity
+        ProviderRegistry.registerTileEntity(TileEntityInfiniteProviderCobblestone.class, Tags.MOD_ID + "_cobblestone");
+        ProviderRegistry.registerTileEntity(TileEntityInfiniteProviderWater.class, Tags.MOD_ID + "_water");
+        ProviderRegistry.registerTileEntity(TileEntityInfiniteProviderLava.class, Tags.MOD_ID + "_lava");
+
+        ProviderRegistry.registerTileEntities();
     }
 }

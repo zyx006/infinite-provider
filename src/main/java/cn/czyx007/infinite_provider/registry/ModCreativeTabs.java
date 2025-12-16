@@ -20,6 +20,6 @@ public class ModCreativeTabs extends CreativeTabs {
     @Override
     @SideOnly(Side.CLIENT)
     public ItemStack createIcon() {
-        return new ItemStack(ModProviders.PROVIDERS[0]);
+        return new ItemStack(ModProviders.INFINITE_PROVIDER_COBBLESTONE);
     }
 }
