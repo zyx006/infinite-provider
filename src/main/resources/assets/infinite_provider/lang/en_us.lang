@@ -1,0 +1,8 @@
+# Block Names
+tile.infinite_provider.infinite_provider_dirt.name=Infinite Dirt Provider
+
+# Item Names (same as blocks)
+item.infinite_provider.infinite_provider_dirt.name=Infinite Dirt Provider
+
+# Tooltips
+infinite_provider.tooltip.dirt=§7Provides infinite Dirt

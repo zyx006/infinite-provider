@@ -1,0 +1,8 @@
+# 方块名称
+tile.infinite_provider.infinite_provider_dirt.name=无限泥土供应器
+
+# 物品名称（与方块相同）
+item.infinite_provider.infinite_provider_dirt.name=无限泥土供应器
+
+# 提示信息
+infinite_provider.tooltip.dirt=§7提供无限的泥土
