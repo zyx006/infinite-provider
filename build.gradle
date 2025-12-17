@@ -147,8 +147,7 @@ dependencies {
         testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
-    // 开发环境需要使用 dev JAR（未混淆版本）
-    implementation(files("libs/infinite_provider-1.1.0-dev.jar"))
+    implementation(rfg.deobf(files("libs/infinite_provider-1.1.0.jar")))
 }
 
 apply from: 'gradle/scripts/dependencies.gradle'
