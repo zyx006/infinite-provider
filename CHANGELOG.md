@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.1] - 2025-12-18
+
+### Fixed / 修复
+- Fixed issue where lava cluster multiplier configuration value was not being used by PowerGeneration / 修复岩浆集群倍率配置值未被 PowerGeneration 使用的问题 
+
 ## [1.2.0] - 2025-12-18
 
 ### Added / 新增
