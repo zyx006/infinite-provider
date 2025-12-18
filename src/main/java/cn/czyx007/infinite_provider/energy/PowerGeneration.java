@@ -13,11 +13,6 @@ import cn.czyx007.infinite_provider.config.GeneratorConfig;
  */
 public class PowerGeneration {
 
-    // 岩浆集群加成常量
-    private static final float SINGLE_BONUS = 1.0f;
-    private static final float SIDE_BONUS = 2.0f;
-    private static final float CLUSTER_BONUS = 4.0f;
-
     /**
      * 计算发电功率
      * @param world 世界对象
@@ -227,7 +222,7 @@ public class PowerGeneration {
      */
     public static float calculateLavaClusterBonus(World world, BlockPos bottomWaterPos) {
         if (!GeneratorConfig.lavaClusterBonus.enableClusterDetection) {
-            return SINGLE_BONUS;
+            return (float) GeneratorConfig.lavaClusterBonus.singleBonus;
         }
 
         if (world == null || bottomWaterPos == null) {
@@ -237,17 +232,20 @@ public class PowerGeneration {
         // 岩浆供应器应该在最底部水供应器下方
         BlockPos lavaCheckPos = bottomWaterPos.down();
 
+        // 获取配置的加成倍数
+        double[] bonuses = GeneratorConfig.getLavaClusterBonuses();
+
         // 检查单个岩浆供应器
         if (isLavaProvider(world, lavaCheckPos)) {
             if (isLavaCluster(world, lavaCheckPos, 1)) {
                 // 检查是否为3×3集群
-                return CLUSTER_BONUS;
+                return (float) bonuses[2];
             } else if (isLavaSideGroup(world, lavaCheckPos)) {
                 // 检查是否为侧面4个
-                return SIDE_BONUS;
+                return (float) bonuses[1];
             } else {
                 // 单个岩浆供应器
-                return SINGLE_BONUS;
+                return (float) bonuses[0];
             }
         }
 
