@@ -98,27 +98,20 @@ public class ModRecipes {
      * 否则使用原版的 milk_bucket 作为材料
      */
     private static void registerMilkRecipe() {
+        Object milkIngredient = Items.MILK_BUCKET;
+
+        // 如果安装了 CookingForBlockheads，尝试使用 cow_jar
         if (Loader.isModLoaded("cookingforblockheads")) {
             try {
                 Item cowJar = Item.getByNameOrId("cookingforblockheads:cow_jar");
                 if (cowJar != null) {
-                    registerShapedRecipe("infinite_provider_milk",
-                        new ItemStack(ModProviders.INFINITE_PROVIDER_MILK),
-                        "OGO",
-                        "GCG",
-                        "OGO",
-                        'O', Blocks.OBSIDIAN,
-                        'G', Blocks.GLASS,
-                        'C', cowJar
-                    );
-                    return;
+                    milkIngredient = cowJar;
                 }
             } catch (Exception e) {
-                // 如果加载失败，使用备用配方
+                // 如果加载失败，继续使用默认的 milk_bucket
             }
         }
 
-        // 备用配方：使用牛奶桶
         registerShapedRecipe("infinite_provider_milk",
             new ItemStack(ModProviders.INFINITE_PROVIDER_MILK),
             "OGO",
@@ -126,7 +119,7 @@ public class ModRecipes {
             "OGO",
             'O', Blocks.OBSIDIAN,
             'G', Blocks.GLASS,
-            'M', Items.MILK_BUCKET
+            'M', milkIngredient
         );
     }
 

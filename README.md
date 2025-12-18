@@ -12,41 +12,48 @@
 
 ### 📖 模组介绍
 
-**无限供应器（Infinite Provider）** 是一个 Minecraft 1.12.2 Forge 模组，添加了三种无限资源供应器：圆石、水和岩浆。这些方块可以提供无限资源，并包含一个**发电系统**帮助玩家度过前期的发电尴尬期。
+**无限供应器（Infinite Provider）** 是一个 Minecraft 1.12.2 Forge 模组，添加了多种无限资源供应器：圆石、泥土、水、岩浆、牛奶，以及 Mekanism 模组的重水、盐水和锂。这些方块可以提供无限资源，并包含一个**发电系统**帮助玩家度过前期的发电尴尬期。
 
 ### ✨ 功能特性
 
-#### 🧱 三种供应器类型
+#### 🧱 供应器类型
 
-1. **无限圆石供应器**
-   - 提供无限的圆石
-   - **主动输出**：向相邻方块自动输出圆石，最大速率 `2.1G 个/t`
-   - **输出机制**：检测到相邻方块可接收时激活，每 tick 输出；无接收时每秒检测一次
-   - **手动交互**：
-     - 左键点击：取出一个圆石（按住 Shift 左键取出一组）
-     - 右键点击：放入圆石（双击右键放入背包所有圆石）
+**基础固体供应器（圆石、泥土）：**
+- 提供无限的对应固体资源
+- **主动输出**：向相邻方块自动输出，最大速率 `2.1G 个/t`
+- **输出机制**：检测到相邻方块可接收时激活，每 tick 输出；无接收时每秒检测一次
+- **手动交互**：
+  - 左键点击：取出一个物品（按住 Shift 左键取出一组）
+  - 右键点击：放入对应物品（双击右键放入背包所有对应物品）
 
-2. **无限水供应器**
-   - 提供无限的水源
-   - **主动输出**：向相邻方块自动输出水，最大速率 `2.1G mB/t`
-   - **输出机制**：检测到相邻方块可接收时激活，每 tick 输出；无接收时每秒检测一次
-   - **手动交互**：
-     - 左键点击：用一个容器装满水（按住 Shift 左键填满整堆容器）
-     - 右键点击：排空手持的水容器（双击右键排空背包所有水容器）
-   - **被动交互**：实体站在上面会自动熄灭火焰
-   - 发电系统的核心组件
-   - 顶层水供应器向相邻方块输出能量
+**无限水供应器：**
+- 提供无限的水源
+- **主动输出**：向相邻方块自动输出水，最大速率 `2.1G mB/t`
+- **输出机制**：检测到相邻方块可接收时激活，每 tick 输出；无接收时每秒检测一次
+- **手动交互**：
+  - 左键点击：用一个容器装满水（按住 Shift 左键填满整堆容器）
+  - 右键点击：排空手持的水容器（双击右键排空背包所有水容器）
+- **被动交互**：实体站在上面会自动熄灭火焰
+- **发电系统**：作为核心组件，顶层水供应器向相邻方块输出能量
 
-3. **无限岩浆供应器**
-   - 提供无限的岩浆源
-   - **主动输出**：向相邻方块自动输出岩浆，最大速率 `2.1G mB/t`
-   - **输出机制**：检测到相邻方块可接收时激活，每 tick 输出；无接收时每秒检测一次
-   - **手动交互**：
-     - 左键点击：用一个容器装满岩浆（按住 Shift 左键填满整堆容器）
-     - 右键点击：排空手持的岩浆容器（双击右键排空背包所有岩浆容器）
-   - **被动交互**：实体站在上面会受到 2.0 点火焰伤害并被点燃 3 秒
-   - 发电系统的底座
-   - 支持集群摆放以获得发电加成
+**无限岩浆供应器：**
+- 提供无限的岩浆源
+- **主动输出**：向相邻方块自动输出岩浆，最大速率 `2.1G mB/t`
+- **输出机制**：检测到相邻方块可接收时激活，每 tick 输出；无接收时每秒检测一次
+- **手动交互**：
+  - 左键点击：用一个容器装满岩浆（按住 Shift 左键填满整堆容器）
+  - 右键点击：排空手持的岩浆容器（双击右键排空背包所有岩浆容器）
+- **被动交互**：实体站在上面会受到 2.0 点火焰伤害并被点燃 3 秒
+- **发电系统**：作为底座，支持集群摆放以获得发电加成
+
+**其他流体供应器（牛奶、重水、盐水、锂）：**
+- 提供无限的对应流体资源
+- **主动输出**：向相邻方块自动输出流体，最大速率 `2.1G mB/t`
+- **输出机制**：检测到相邻方块可接收时激活，每 tick 输出；无接收时每秒检测一次
+- **手动交互**：
+  - 左键点击：用一个容器装满流体（按住 Shift 左键填满整堆容器）
+  - 右键点击：排空手持的流体容器（双击右键排空背包所有流体容器）
+- **注意**：重水、盐水、锂供应器需要安装 Mekanism 模组
 
 #### ⚡ 发电系统
 
@@ -123,41 +130,48 @@
 
 ### 📖 Introduction
 
-**Infinite Provider** is a Minecraft 1.12.2 Forge mod that adds three types of infinite resource providers: cobblestone, water, and lava. These blocks provide unlimited resources and include a **power generation system** to help players get through the early-game energy bottleneck.
+**Infinite Provider** is a Minecraft 1.12.2 Forge mod that adds multiple types of infinite resource providers: cobblestone, dirt, water, lava, milk, and Mekanism fluids (heavy water, brine, lithium). These blocks provide unlimited resources and include a **power generation system** to help players get through the early-game energy bottleneck.
 
 ### ✨ Features
 
-#### 🧱 Three Provider Types
+#### 🧱 Provider Types
 
-1. **Infinite Cobblestone Provider**
-   - Provides infinite cobblestone
-   - **Active Output**: Automatically outputs cobblestone to adjacent blocks, max rate `2.1G items/t`
-   - **Output Mechanism**: Activates when adjacent blocks can receive, outputs every tick; checks once per second when idle
-   - **Manual Interaction**:
-     - Left-click: Extract one cobblestone (Shift + left-click to extract one stack)
-     - Right-click: Insert cobblestone (double right-click to insert all cobblestone from inventory)
+**Basic Solid Providers (Cobblestone, Dirt):**
+- Provides infinite corresponding solid resources
+- **Active Output**: Automatically outputs to adjacent blocks, max rate `2.1G items/t`
+- **Output Mechanism**: Activates when adjacent blocks can receive, outputs every tick; checks once per second when idle
+- **Manual Interaction**:
+  - Left-click: Extract one item (Shift + left-click to extract one stack)
+  - Right-click: Insert corresponding item (double right-click to insert all from inventory)
 
-2. **Infinite Water Provider**
-   - Provides infinite water source
-   - **Active Output**: Automatically outputs water to adjacent blocks, max rate `2.1G mB/t`
-   - **Output Mechanism**: Activates when adjacent blocks can receive, outputs every tick; checks once per second when idle
-   - **Manual Interaction**:
-     - Left-click: Fill one container with water (Shift + left-click to fill entire stack of containers)
-     - Right-click: Empty held water container (double right-click to empty all water containers from inventory)
-   - **Passive Interaction**: Walking on it automatically extinguishes fire on entities
-   - Core component of the power generation system
-   - Outputs energy to adjacent blocks from the top provider
+**Infinite Water Provider:**
+- Provides infinite water source
+- **Active Output**: Automatically outputs water to adjacent blocks, max rate `2.1G mB/t`
+- **Output Mechanism**: Activates when adjacent blocks can receive, outputs every tick; checks once per second when idle
+- **Manual Interaction**:
+  - Left-click: Fill one container with water (Shift + left-click to fill entire stack of containers)
+  - Right-click: Empty held water container (double right-click to empty all water containers from inventory)
+- **Passive Interaction**: Walking on it automatically extinguishes fire on entities
+- **Power System**: Core component, outputs energy to adjacent blocks from the top provider
 
-3. **Infinite Lava Provider**
-   - Provides infinite lava source
-   - **Active Output**: Automatically outputs lava to adjacent blocks, max rate `2.1G mB/t`
-   - **Output Mechanism**: Activates when adjacent blocks can receive, outputs every tick; checks once per second when idle
-   - **Manual Interaction**:
-     - Left-click: Fill one container with lava (Shift + left-click to fill entire stack of containers)
-     - Right-click: Empty held lava container (double right-click to empty all lava containers from inventory)
-   - **Passive Interaction**: Walking on it deals 2.0 fire damage and sets entities on fire for 3 seconds
-   - Acts as the base for the power generation system
-   - Supports cluster patterns for power bonuses
+**Infinite Lava Provider:**
+- Provides infinite lava source
+- **Active Output**: Automatically outputs lava to adjacent blocks, max rate `2.1G mB/t`
+- **Output Mechanism**: Activates when adjacent blocks can receive, outputs every tick; checks once per second when idle
+- **Manual Interaction**:
+  - Left-click: Fill one container with lava (Shift + left-click to fill entire stack of containers)
+  - Right-click: Empty held lava container (double right-click to empty all lava containers from inventory)
+- **Passive Interaction**: Walking on it deals 2.0 fire damage and sets entities on fire for 3 seconds
+- **Power System**: Acts as the base, supports cluster patterns for power bonuses
+
+**Other Fluid Providers (Milk, Heavy Water, Brine, Lithium):**
+- Provides infinite corresponding fluid resources
+- **Active Output**: Automatically outputs fluid to adjacent blocks, max rate `2.1G mB/t`
+- **Output Mechanism**: Activates when adjacent blocks can receive, outputs every tick; checks once per second when idle
+- **Manual Interaction**:
+  - Left-click: Fill one container with fluid (Shift + left-click to fill entire stack of containers)
+  - Right-click: Empty held fluid container (double right-click to empty all from inventory)
+- **Note**: Heavy Water, Brine, and Lithium providers require Mekanism mod
 
 #### ⚡ Power Generation System
 
