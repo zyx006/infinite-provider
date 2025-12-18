@@ -1,6 +1,7 @@
 package cn.czyx007.infinite_provider;
 
 import cn.czyx007.infinite_provider.registry.ModProviders;
+import cn.czyx007.infinite_provider.registry.ModRecipes;
 import cn.czyx007.infinite_provider.tileentity.ModTileEntities;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -24,6 +25,8 @@ public class InfiniteProvider {
     
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
+        // 注册合成配方
+        ModRecipes.registerRecipes();
         LOGGER.info("{} initialization complete!", Tags.MOD_NAME);
     }
 }

@@ -2,22 +2,37 @@
 
 # Block Names
 tile.infinite_provider.infinite_provider_cobblestone.name=Infinite Cobblestone Provider
+tile.infinite_provider.infinite_provider_dirt.name=Infinite Dirt Provider
 tile.infinite_provider.infinite_provider_water.name=Infinite Water Provider
 tile.infinite_provider.infinite_provider_lava.name=Infinite Lava Provider
+tile.infinite_provider.infinite_provider_milk.name=Infinite Milk Provider
+tile.infinite_provider.infinite_provider_heavy_water.name=Infinite Heavy Water Provider
+tile.infinite_provider.infinite_provider_liquidbrine.name=Infinite Liquid Brine Provider
+tile.infinite_provider.infinite_provider_liquidlithium.name=Infinite Liquid Lithium Provider
 
 # Item Names (same as blocks)
 item.infinite_provider.infinite_provider_cobblestone.name=Infinite Cobblestone Provider
+item.infinite_provider.infinite_provider_dirt.name=Infinite Dirt Provider
 item.infinite_provider.infinite_provider_water.name=Infinite Water Provider
 item.infinite_provider.infinite_provider_lava.name=Infinite Lava Provider
+item.infinite_provider.infinite_provider_milk.tooltip=Infinite Milk Provider
+item.infinite_provider.infinite_provider_heavy_water.tooltip=Infinite Heavy Water Provider
+item.infinite_provider.infinite_provider_liquidbrine.tooltip=Infinite Liquid Brine Provider
+item.infinite_provider.infinite_provider_liquidlithium.tooltip=Infinite Liquid Lithium Provider
 
 # Creative Tab
 itemGroup.infinite_provider=Infinite Provider
 
 # Tooltips
 infinite_provider.tooltip.cobblestone=§7Provides infinite cobblestone
+infinite_provider.tooltip.dirt=§7Provides infinite dirt
 infinite_provider.tooltip.water=§7Provides infinite water, standing on it extinguishes fire
 infinite_provider.tooltip.lava=§7Provides infinite lava, standing on it causes fire damage
 infinite_provider.tooltip.shift_for_more=§8[§7Hold §fShift §7for more information§8]
+infinite_provider.tooltip.milk=§7Provides infinite milk
+infinite_provider.tooltip.heavy_water=§7Provides infinite heavy water
+infinite_provider.tooltip.liquidbrine=§7Provides infinite liquid brine
+infinite_provider.tooltip.liquidlithium=§7Provides infinite liquid lithium
 
 # Generator System Tooltips
 infinite_provider.tooltip.generator.title=§6§lGenerator System:

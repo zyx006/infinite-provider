@@ -2,22 +2,37 @@
 
 # 方块名称
 tile.infinite_provider.infinite_provider_cobblestone.name=无限圆石供应器
+tile.infinite_provider.infinite_provider_dirt.name=无限泥土供应器
 tile.infinite_provider.infinite_provider_water.name=无限水供应器
 tile.infinite_provider.infinite_provider_lava.name=无限岩浆供应器
+tile.infinite_provider.infinite_provider_milk.name=无限牛奶供应器
+tile.infinite_provider.infinite_provider_heavy_water.name=无限重水供应器
+tile.infinite_provider.infinite_provider_liquidbrine.name=无限盐水供应器
+tile.infinite_provider.infinite_provider_liquidlithium.name=无限液态锂供应器
 
 # 物品名称（与方块相同）
 item.infinite_provider.infinite_provider_cobblestone.name=无限圆石供应器
+item.infinite_provider.infinite_provider_dirt.name=无限泥土供应器
 item.infinite_provider.infinite_provider_water.name=无限水供应器
 item.infinite_provider.infinite_provider_lava.name=无限岩浆供应器
+item.infinite_provider.infinite_provider_milk.tooltip=无限牛奶供应器
+item.infinite_provider.infinite_provider_heavy_water.tooltip=无限重水供应器
+item.infinite_provider.infinite_provider_liquidbrine.tooltip=无限盐水供应器
+item.infinite_provider.infinite_provider_liquidlithium.tooltip=无限液态锂供应器
 
 # 创造模式标签页
 itemGroup.infinite_provider=无限供应器
 
 # 提示信息
 infinite_provider.tooltip.cobblestone=§7提供无限的圆石
+infinite_provider.tooltip.dirt=§7提供无限的泥土
 infinite_provider.tooltip.water=§7提供无限的水源，站在上面可以灭火
 infinite_provider.tooltip.lava=§7提供无限的岩浆源，站在上面会受到火焰伤害
 infinite_provider.tooltip.shift_for_more=§8[§7按住 §fShift §7查看更多信息§8]
+infinite_provider.tooltip.milk=§7提供无限的牛奶
+infinite_provider.tooltip.heavy_water=§7提供无限的重水
+infinite_provider.tooltip.liquidbrine=§7提供无限的盐水
+infinite_provider.tooltip.liquidlithium=§7提供无限的液态锂
 
 # 发电系统提示信息
 infinite_provider.tooltip.generator.title=§6§l发电系统：

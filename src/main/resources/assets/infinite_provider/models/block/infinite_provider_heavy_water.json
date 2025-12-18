@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "infinite_provider:blocks/infinite_provider_heavy_water"
+  }
+}

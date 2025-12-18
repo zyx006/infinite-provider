@@ -177,16 +177,19 @@ dependencies {
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
 
-    implementation(rfg.deobf("curse.maven:ae2-extended-life-570458:6302098"))
+    runtimeOnly(rfg.deobf("curse.maven:ae2-extended-life-570458:6302098"))
     //mek前置
-    implementation('curse.maven:mcmultipart-239431:2615930')
-    compileOnly(rfg.deobf("curse.maven:MekanismEnergistics-1027681:5775101"))
-    implementation(rfg.deobf("curse.maven:mekanism-ce-unofficial-840735:5946841"))
+    runtimeOnly('curse.maven:mcmultipart-239431:2615930')
+    runtimeOnly(rfg.deobf("curse.maven:MekanismEnergistics-1027681:5775101"))
+    runtimeOnly(rfg.deobf("curse.maven:mekanism-ce-unofficial-840735:5946841"))
 
-    implementation(rfg.deobf('curse.maven:had-enough-items-557549:4543375'))
-    implementation('curse.maven:inventory-tweaks-API-223094:2923461')
-    implementation('curse.maven:the-one-probe-245211:2667280')
-    implementation(rfg.deobf("curse.maven:Flux-Networks-248020:3178199"))
+    runtimeOnly(rfg.deobf('curse.maven:had-enough-items-557549:4543375'))
+    runtimeOnly('curse.maven:inventory-tweaks-API-223094:2923461')
+    runtimeOnly('curse.maven:the-one-probe-245211:2667280')
+    runtimeOnly(rfg.deobf("curse.maven:Flux-Networks-248020:3178199"))
+
+    runtimeOnly(rfg.deobf("curse.maven:nuclearcraft-overhauled-336895:6605808"))
+    runtimeOnly(rfg.deobf("curse.maven:cooking-for-blockheads-231484:2862651"))
 }
 
 apply from: 'gradle/scripts/dependencies.gradle'
