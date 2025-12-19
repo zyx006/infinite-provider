@@ -61,6 +61,11 @@ public class TileEntityInfiniteProviderWater extends TileEntityInfiniteProviderB
     }
 
     @Override
+    public int getProviderMaxOutputRate() {
+        return GeneratorConfig.providerOutputRate.waterMaxOutputRate;
+    }
+
+    @Override
     public void update() {
         super.update();
 

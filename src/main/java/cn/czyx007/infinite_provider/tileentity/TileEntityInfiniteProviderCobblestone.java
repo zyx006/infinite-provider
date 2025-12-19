@@ -1,6 +1,7 @@
 package cn.czyx007.infinite_provider.tileentity;
 
 import cn.czyx007.infinite_provider.Tags;
+import cn.czyx007.infinite_provider.config.GeneratorConfig;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.init.Blocks;
@@ -24,5 +25,10 @@ public class TileEntityInfiniteProviderCobblestone extends TileEntityInfinitePro
     @Override
     public String getProviderTypeName() {
         return Tags.MOD_ID + "_cobblestone";
+    }
+
+    @Override
+    public int getProviderMaxOutputRate() {
+        return GeneratorConfig.providerOutputRate.cobblestoneMaxOutputRate;
     }
 }

@@ -1,5 +1,6 @@
 package cn.czyx007.infinite_provider.tileentity;
 
+import cn.czyx007.infinite_provider.config.GeneratorConfig;
 import cn.czyx007.infinite_provider.output.IOutputProvider;
 import cn.czyx007.infinite_provider.output.OutputScheduler;
 
@@ -54,6 +55,12 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
      */
     public abstract String getProviderTypeName();
 
+    /**
+     * 获取供应器的最大输出速率（物品/流体）
+     * 子类应该从配置文件中读取对应的配置值
+     */
+    public abstract int getProviderMaxOutputRate();
+
     @Override
     public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
         // 物品供应器才暴露物品处理能力
@@ -98,7 +105,7 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
             ItemStack provided = getProvidedItem();
             if (provided != null && !provided.isEmpty()) {
                 ItemStack stack = provided.copy();
-                stack.setCount(Integer.MAX_VALUE);
+                stack.setCount(getMaxOutputRate());
                 return stack;
             }
             return ItemStack.EMPTY;
@@ -139,7 +146,7 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
 
         @Override
         public int getSlotLimit(int slot) {
-            return Integer.MAX_VALUE;
+            return getMaxOutputRate();
         }
     }
     
@@ -155,12 +162,12 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
                     new IFluidTankProperties() {
                         @Override
                         public FluidStack getContents() {
-                            return new FluidStack(fluid, Integer.MAX_VALUE);
+                            return new FluidStack(fluid, getMaxOutputRate());
                         }
 
                         @Override
                         public int getCapacity() {
-                            return Integer.MAX_VALUE;
+                            return getMaxOutputRate();
                         }
 
                         @Override
@@ -911,7 +918,12 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
     
     @Override
     public int getMaxOutputRate() {
-        return Integer.MAX_VALUE;
+        // 如果启用了全局覆盖，使用全局配置值
+        if (GeneratorConfig.providerOutputRate.overrideAll) {
+            return GeneratorConfig.providerOutputRate.globalMaxOutputRate;
+        }
+        // 否则使用子类提供的配置值
+        return getProviderMaxOutputRate();
     }
     
     @Override

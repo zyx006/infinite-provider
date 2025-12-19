@@ -22,9 +22,6 @@ public class OutputScheduler {
     private static final int DEFAULT_CHECK_INTERVAL = 20; // 默认每秒检查一次 (20 ticks)
     private static final int ACTIVE_CHECK_INTERVAL = 1;  // 激活状态每tick检查
     
-    // 输出速率配置
-    private static final int MAX_CAPACITY = Integer.MAX_VALUE; // 最大容量 2.1G
-    
     public OutputScheduler(IOutputProvider provider, TileEntity tileEntity) {
         this.provider = provider;
         this.tileEntity = tileEntity;
@@ -58,6 +55,9 @@ public class OutputScheduler {
         World world = tileEntity.getWorld();
         BlockPos pos = tileEntity.getPos();
 
+        // 获取当前供应器的最大输出速率
+        int maxOutputRate = provider.getMaxOutputRate();
+
         // 检查供应器类型
         ItemStack providedItem = provider.getProvidedItem();
         boolean hasItem = providedItem != null && !providedItem.isEmpty();
@@ -78,7 +78,7 @@ public class OutputScheduler {
 
             // 如果是物品供应器，尝试输出物品
             if (hasItem && targetTE.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite())) {
-                int itemOutput = provider.outputItem(direction, MAX_CAPACITY);
+                int itemOutput = provider.outputItem(direction, maxOutputRate);
                 if (itemOutput > 0) {
                     anyOutputSuccess = true;
                 }
@@ -86,7 +86,7 @@ public class OutputScheduler {
             
             // 如果是流体供应器，尝试输出流体
             if (hasFluid && targetTE.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite())) {
-                int fluidOutput = provider.outputFluid(direction, MAX_CAPACITY);
+                int fluidOutput = provider.outputFluid(direction, maxOutputRate);
                 if (fluidOutput > 0) {
                     anyOutputSuccess = true;
                 }

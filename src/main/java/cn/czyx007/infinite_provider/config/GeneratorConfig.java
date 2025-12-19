@@ -37,21 +37,21 @@ public class GeneratorConfig {
         @Config.RangeInt(min = 0)
         public int powerLevel4 = 1024;
         
-        @Config.Comment({"5个水供应器的基础发电量 [默认: 2048 RF/t]", "Base power generation for 5 water providers [Default: 2048 RF/t]"})
+        @Config.Comment({"5个水供应器的基础发电量 [默认: 1152 RF/t]", "Base power generation for 5 water providers [Default: 1152 RF/t]"})
         @Config.RangeInt(min = 0)
-        public int powerLevel5 = 2048;
+        public int powerLevel5 = 1152;
         
-        @Config.Comment({"6个水供应器的基础发电量 [默认: 4096 RF/t]", "Base power generation for 6 water providers [Default: 4096 RF/t]"})
+        @Config.Comment({"6个水供应器的基础发电量 [默认: 1280 RF/t]", "Base power generation for 6 water providers [Default: 1280 RF/t]"})
         @Config.RangeInt(min = 0)
-        public int powerLevel6 = 4096;
+        public int powerLevel6 = 1280;
         
-        @Config.Comment({"7个水供应器的基础发电量 [默认: 8192 RF/t]", "Base power generation for 7 water providers [Default: 8192 RF/t]"})
+        @Config.Comment({"7个水供应器的基础发电量 [默认: 1344 RF/t]", "Base power generation for 7 water providers [Default: 1344 RF/t]"})
         @Config.RangeInt(min = 0)
-        public int powerLevel7 = 8192;
+        public int powerLevel7 = 1344;
         
-        @Config.Comment({"8个及更多水供应器的基础发电量 [默认: 16384 RF/t]", "Base power generation for 8 or more water providers [Default: 16384 RF/t]"})
+        @Config.Comment({"8个及更多水供应器的基础发电量 [默认: 1408 RF/t]", "Base power generation for 8 or more water providers [Default: 1408 RF/t]"})
         @Config.RangeInt(min = 0)
-        public int powerLevel8 = 16384;
+        public int powerLevel8 = 1408;
     }
     
     // ============ 岩浆集群加成配置 ============
@@ -91,6 +91,52 @@ public class GeneratorConfig {
         public int waterProviderMaxOutput = Integer.MAX_VALUE;
     }
     
+    // ============ 供应器输出速率配置 ============
+
+    @Config.Comment({"供应器输出速率配置", "Provider Output Rate Settings"})
+    public static ProviderOutputRate providerOutputRate = new ProviderOutputRate();
+
+    public static class ProviderOutputRate {
+        @Config.Comment({"是否覆盖所有供应器的最大输出速率 [默认: false]", "Override all provider max output rates [Default: false]"})
+        public boolean overrideAll = false;
+
+        @Config.Comment({"覆盖时使用的全局最大输出速率 [默认: 2.1G]", "Global max output rate when overriding [Default: 2.1G]"})
+        @Config.RangeInt(min = 0)
+        public int globalMaxOutputRate = Integer.MAX_VALUE;
+
+        @Config.Comment({"水供应器的最大输出速率（流体） [默认: 2.1G/t]", "Water provider max output rate (item/fluid) [Default: 2.1G/t]"})
+        @Config.RangeInt(min = 0)
+        public int waterMaxOutputRate = Integer.MAX_VALUE;
+
+        @Config.Comment({"岩浆供应器的最大输出速率（流体） [默认: 2.1G/t]", "Lava provider max output rate (fluid) [Default: 2.1G/t]"})
+        @Config.RangeInt(min = 0)
+        public int lavaMaxOutputRate = Integer.MAX_VALUE;
+
+        @Config.Comment({"圆石供应器的最大输出速率（物品） [默认: 2.1G/t]", "Cobblestone provider max output rate (item) [Default: 2.1G/t]"})
+        @Config.RangeInt(min = 0)
+        public int cobblestoneMaxOutputRate = Integer.MAX_VALUE;
+
+        @Config.Comment({"泥土供应器的最大输出速率（物品） [默认: 2.1G/t]", "Dirt provider max output rate (item) [Default: 2.1G/t]"})
+        @Config.RangeInt(min = 0)
+        public int dirtMaxOutputRate = Integer.MAX_VALUE;
+
+        @Config.Comment({"牛奶供应器的最大输出速率（流体） [默认: 2.1G/t]", "Milk provider max output rate (fluid) [Default: 2.1G/t]"})
+        @Config.RangeInt(min = 0)
+        public int milkMaxOutputRate = Integer.MAX_VALUE;
+
+        @Config.Comment({"重水供应器的最大输出速率（流体） [默认: 100/t]", "Heavy water provider max output rate (fluid) [Default: 100/t]"})
+        @Config.RangeInt(min = 0)
+        public int heavyWaterMaxOutputRate = 100;
+
+        @Config.Comment({"盐水供应器的最大输出速率（流体） [默认: 300/t]", "Liquid brine provider max output rate (fluid) [Default: 300/t]"})
+        @Config.RangeInt(min = 0)
+        public int liquidBrineMaxOutputRate = 300;
+
+        @Config.Comment({"液态锂供应器的最大输出速率（流体） [默认: 300/t]", "Liquid lithium provider max output rate (fluid) [Default: 300/t]"})
+        @Config.RangeInt(min = 0)
+        public int liquidLithiumMaxOutputRate = 300;
+    }
+
     // ============ 配置变更处理 ============
     
     @SubscribeEvent

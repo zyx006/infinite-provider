@@ -41,6 +41,11 @@ public class TileEntityInfiniteProviderLava extends TileEntityInfiniteProviderBa
     }
     
     @Override
+    public int getProviderMaxOutputRate() {
+        return GeneratorConfig.providerOutputRate.lavaMaxOutputRate;
+    }
+
+    @Override
     public void update() {
         super.update();
         
