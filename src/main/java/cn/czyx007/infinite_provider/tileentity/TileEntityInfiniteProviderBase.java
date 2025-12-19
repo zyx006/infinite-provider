@@ -878,6 +878,25 @@ public abstract class TileEntityInfiniteProviderBase extends TileEntity implemen
         outputScheduler.update();
     }
     
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        // 方块加载时刷新输出调度器缓存
+        if (outputScheduler != null) {
+            outputScheduler.markDirty();
+        }
+    }
+
+    /**
+     * 当相邻方块更新时调用
+     * 通知输出调度器刷新缓存
+     */
+    public void neighborChanged() {
+        if (outputScheduler != null) {
+            outputScheduler.markDirty();
+        }
+    }
+
     // ============ IOutputProvider 接口实现 ============
     
     @Override

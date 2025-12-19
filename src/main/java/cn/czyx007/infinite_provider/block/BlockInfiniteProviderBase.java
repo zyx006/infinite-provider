@@ -82,6 +82,18 @@ public abstract class BlockInfiniteProviderBase extends Block {
         return new ItemStack(Item.getItemFromBlock(this));
     }
 
+    @Override
+    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
+        super.neighborChanged(state, world, pos, blockIn, fromPos);
+        if (!world.isRemote) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof TileEntityInfiniteProviderBase) {
+                TileEntityInfiniteProviderBase provider = (TileEntityInfiniteProviderBase) te;
+                provider.neighborChanged();
+            }
+        }
+    }
+
     /**
      * 获取供应器类型名称
      */
