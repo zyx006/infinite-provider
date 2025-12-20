@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.0] - 2025-12-20
+
+- Added output rate configuration and adjusted default settings / 添加输出速率配置，调整默认配置
+- Optimized output scheduler with caching mechanism to improve performance / 优化输出调度器，添加缓存机制以提高性能
+
 ## [1.2.1] - 2025-12-18
 
 ### Fixed / 修复

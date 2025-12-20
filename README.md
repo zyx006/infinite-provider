@@ -12,7 +12,7 @@
 
 ### 📖 模组介绍
 
-**无限供应器（Infinite Provider）** 是一个 Minecraft 1.12.2 Forge 模组，添加了多种无限资源供应器：圆石、泥土、水、岩浆、牛奶，以及 Mekanism 模组的重水、盐水和锂。这些方块可以提供无限资源，并包含一个**发电系统**帮助玩家度过前期的发电尴尬期。
+**无限供应器（Infinite Provider）** 是一个 Minecraft 1.12.2 Forge 模组，添加了多种无限资源供应器：圆石、泥土、水、岩浆、牛奶，以及 Mekanism 模组的重水、盐水和锂。这些方块可以提供无限资源，并包含一个**发电系统**帮助玩家度过前期的发电尴尬期。（输出/发电速率均可配置）
 
 ### ✨ 功能特性
 
@@ -53,7 +53,7 @@
 - **手动交互**：
   - 左键点击：用一个容器装满流体（按住 Shift 左键填满整堆容器）
   - 右键点击：排空手持的流体容器（双击右键排空背包所有流体容器）
-- **注意**：重水、盐水、锂供应器需要安装 Mekanism 模组
+- **注意**：重水、盐水、锂供应器需要安装 Mekanism 模组，默认输出速率分别为100mB/t、300mB/t、300mB/t
 
 #### ⚡ 发电系统
 
@@ -69,10 +69,10 @@
 - 2个水供应器：`512 RF/t`
 - 3个水供应器：`768 RF/t`
 - 4个水供应器：`1024 RF/t`
-- 5个水供应器：`2048 RF/t`
-- 6个水供应器：`4096 RF/t`
-- 7个水供应器：`8192 RF/t`
-- 8个及以上水供应器：`16384 RF/t`
+- 5个水供应器：`1152 RF/t`
+- 6个水供应器：`1280 RF/t`
+- 7个水供应器：`1344 RF/t`
+- 8个及以上水供应器：`1408 RF/t`
 
 **能量输出：**
 - 能量存储容量：`2.1G RF`（Integer.MAX_VALUE）
@@ -92,7 +92,7 @@
 
 **计算方式：**
 - 最终功率 = 基础功率 × 集群倍数
-- 示例：8个水供应器 + 3×3岩浆集群 = `16384 × 4.0 = 65536 RF/t`
+- 示例：8个水供应器 + 3×3岩浆集群 = `1408 × 4.0 = 5632 RF/t`
 - 如果不需要集群倍率可以在配置中禁用
 
 ### 🔧 配置选项
@@ -130,7 +130,7 @@
 
 ### 📖 Introduction
 
-**Infinite Provider** is a Minecraft 1.12.2 Forge mod that adds multiple types of infinite resource providers: cobblestone, dirt, water, lava, milk, and Mekanism fluids (heavy water, brine, lithium). These blocks provide unlimited resources and include a **power generation system** to help players get through the early-game energy bottleneck.
+**Infinite Provider** is a Minecraft 1.12.2 Forge mod that adds multiple types of infinite resource providers: cobblestone, dirt, water, lava, milk, and Mekanism fluids (heavy water, brine, lithium). These blocks provide unlimited resources and include a **power generation system** to help players get through the early-game energy bottleneck. (Output/generation rates are configurable.)
 
 ### ✨ Features
 
@@ -171,7 +171,7 @@
 - **Manual Interaction**:
   - Left-click: Fill one container with fluid (Shift + left-click to fill entire stack of containers)
   - Right-click: Empty held fluid container (double right-click to empty all from inventory)
-- **Note**: Heavy Water, Brine, and Lithium providers require Mekanism mod
+- **Note**: Heavy Water, Brine, and Lithium providers require Mekanism mod. Default output rates are 100mB/t, 300mB/t, and 300mB/t respectively.
 
 #### ⚡ Power Generation System
 
@@ -187,10 +187,10 @@ Build a vertical power generator using water and lava providers:
 - 2 Water Providers: `512 RF/t`
 - 3 Water Providers: `768 RF/t`
 - 4 Water Providers: `1024 RF/t`
-- 5 Water Providers: `2048 RF/t`
-- 6 Water Providers: `4096 RF/t`
-- 7 Water Providers: `8192 RF/t`
-- 8+ Water Providers: `16384 RF/t`
+- 5 Water Providers: `1152 RF/t`
+- 6 Water Providers: `1280 RF/t`
+- 7 Water Providers: `1344 RF/t`
+- 8+ Water Providers: `1408 RF/t`
 
 **Energy Output:**
 - Energy Storage: `2.1G RF` (Integer.MAX_VALUE)
@@ -210,7 +210,7 @@ Arrange lava providers in different patterns to increase power generation:
 
 **Calculation:**
 - Final power = Base power × Cluster multiplier
-- Example: 8 water providers + 3×3 lava cluster = `16384 × 4.0 = 65536 RF/t`
+- Example: 8 water providers + 3×3 lava cluster = `1408 × 4.0 = 5632 RF/t`
 - Can be disabled in configuration if not needed
 
 #### 🔧 Configuration
