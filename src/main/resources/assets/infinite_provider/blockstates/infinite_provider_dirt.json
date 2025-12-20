@@ -1,6 +1,0 @@
-{
-  "variants": {
-    "normal": { "model": "infinite_provider:infinite_provider_dirt" },
-    "inventory": { "model": "infinite_provider:infinite_provider_dirt" }
-  }
-}

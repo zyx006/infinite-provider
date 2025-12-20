@@ -13,11 +13,12 @@
       "item": "minecraft:glass"
     },
     "D": {
-      "item": "minecraft:dirt"
+      "item": "minecraft:dirt",
+      "data": 0
     }
   },
   "result": {
-    "item": "infinite_provider:infinite_provider_dirt"
+    "item": "infinite_provider:infinite_provider_dirt_test"
   }
 }
 
